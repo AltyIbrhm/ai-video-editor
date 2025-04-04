@@ -4,6 +4,13 @@ import { hashPassword } from '@/lib/auth';
 import { sendVerificationEmail } from '@/lib/email';
 import crypto from 'crypto';
 
+// Get the base URL for the application
+function getBaseUrl() {
+  return process.env.NEXT_PUBLIC_APP_URL || 
+    (typeof window !== 'undefined' && window.location.origin) || 
+    'https://www.editai.app';
+}
+
 export async function POST(request: Request) {
   try {
     const { name, email, password } = await request.json();
@@ -63,19 +70,30 @@ export async function POST(request: Request) {
     console.log('Verification token created:', { tokenId: verificationToken.id });
 
     // Send verification email
-    const verificationUrl = `${process.env.NEXT_PUBLIC_APP_URL}/auth/verify-email?token=${token}`;
-    console.log('Sending verification email with URL:', verificationUrl);
+    const baseUrl = getBaseUrl();
+    console.log('Using base URL:', baseUrl);
+    
+    const verificationUrl = `/auth/verify-email?token=${token}`;
+    console.log('Sending verification email with relative URL:', verificationUrl);
+
+    // The email library will convert this to an absolute URL
     await sendVerificationEmail(email, verificationUrl);
 
     console.log('Signup process completed successfully');
     return NextResponse.json(
       {
         message: 'User created successfully. Please check your email for verification.',
-        debug: process.env.NODE_ENV === 'development' ? { verificationUrl } : undefined,
+        debug: process.env.NODE_ENV === 'development' 
+          ? { 
+              verificationUrl: `${baseUrl}${verificationUrl.startsWith('/') ? '' : '/'}${verificationUrl}`,
+              email,
+              tokenUsed: token 
+            } 
+          : undefined,
       },
       { status: 201 }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error('Signup error:', error);
     // Log detailed error information
     if (error instanceof Error) {
@@ -85,8 +103,25 @@ export async function POST(request: Request) {
         stack: error.stack,
       });
     }
+    
+    // Return a more detailed error in development
+    const errorData: any = { 
+      message: 'Error creating user',
+    };
+    
+    if (process.env.NODE_ENV === 'development') {
+      errorData.debug = {
+        errorMessage: error.message,
+        errorName: error.name,
+      };
+      
+      if (error.stack) {
+        errorData.debug.stack = error.stack.split('\n').slice(0, 3).join('\n');
+      }
+    }
+    
     return NextResponse.json(
-      { message: 'Error creating user' },
+      errorData,
       { status: 500 }
     );
   }

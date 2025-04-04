@@ -3,14 +3,28 @@ import sgMail from '@sendgrid/mail';
 // Initialize SendGrid with API key
 if (process.env.SENDGRID_API_KEY) {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+} else {
+  console.warn('SENDGRID_API_KEY is not configured. Email sending will not work.');
 }
 
 const FROM_EMAIL = process.env.FROM_EMAIL || 'noreply@editai.app';
 
+// Get the base URL for the application
+function getBaseUrl() {
+  return process.env.NEXT_PUBLIC_APP_URL || 
+    (typeof window !== 'undefined' && window.location.origin) || 
+    'https://www.editai.app';
+}
+
 export async function sendVerificationEmail(to: string, verificationUrl: string) {
-  // Always log the URL in development
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Verification URL:', verificationUrl);
+  // Always log the URL
+  console.log('Verification URL:', verificationUrl);
+  
+  // Ensure verification URL is absolute
+  if (!verificationUrl.startsWith('http')) {
+    const baseUrl = getBaseUrl();
+    verificationUrl = `${baseUrl}${verificationUrl.startsWith('/') ? '' : '/'}${verificationUrl}`;
+    console.log('Updated to absolute URL:', verificationUrl);
   }
 
   // Check if SendGrid is configured
@@ -56,17 +70,30 @@ export async function sendVerificationEmail(to: string, verificationUrl: string)
   try {
     console.log('Attempting to send email to:', to);
     const result = await sgMail.send(msg);
-    console.log('Email sent successfully:', result);
-  } catch (error) {
+    console.log('Email sent successfully:', result[0]?.statusCode || 'Unknown status');
+    return result;
+  } catch (error: any) {
     console.error('Error sending verification email:', error);
-    throw new Error('Failed to send verification email');
+    if (error.response) {
+      console.error('SendGrid error details:', {
+        statusCode: error.response.statusCode,
+        body: error.response.body,
+        headers: error.response.headers,
+      });
+    }
+    throw new Error(`Failed to send verification email: ${error.message || 'Unknown error'}`);
   }
 }
 
 export async function sendPasswordResetEmail(to: string, resetUrl: string) {
-  // Always log the URL in development
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Password reset URL:', resetUrl);
+  // Always log the URL
+  console.log('Password reset URL:', resetUrl);
+
+  // Ensure reset URL is absolute
+  if (!resetUrl.startsWith('http')) {
+    const baseUrl = getBaseUrl();
+    resetUrl = `${baseUrl}${resetUrl.startsWith('/') ? '' : '/'}${resetUrl}`;
+    console.log('Updated to absolute URL:', resetUrl);
   }
 
   // Check if SendGrid is configured
@@ -112,9 +139,17 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string) {
   try {
     console.log('Attempting to send password reset email to:', to);
     const result = await sgMail.send(msg);
-    console.log('Password reset email sent successfully:', result);
-  } catch (error) {
+    console.log('Password reset email sent successfully:', result[0]?.statusCode || 'Unknown status');
+    return result;
+  } catch (error: any) {
     console.error('Error sending password reset email:', error);
-    throw new Error('Failed to send password reset email');
+    if (error.response) {
+      console.error('SendGrid error details:', {
+        statusCode: error.response.statusCode,
+        body: error.response.body,
+        headers: error.response.headers,
+      });
+    }
+    throw new Error(`Failed to send password reset email: ${error.message || 'Unknown error'}`);
   }
 } 

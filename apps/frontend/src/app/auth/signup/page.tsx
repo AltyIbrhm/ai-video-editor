@@ -1,19 +1,21 @@
 'use client';
 
-import { useState } from 'react';
-import { Video, ArrowLeft } from 'lucide-react';
+import { useState, Suspense } from 'react';
+import { Video, ArrowLeft, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
-export default function Signup() {
+function SignupContent() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [debugInfo, setDebugInfo] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setDebugInfo('');
     setIsLoading(true);
 
     try {
@@ -24,9 +26,14 @@ export default function Signup() {
       });
 
       const data = await response.json();
+      console.log('Signup response:', response.status, data);
 
       if (!response.ok) {
-        throw new Error(data.message || 'Error during signup');
+        // In development, show detailed error
+        if (data.debug) {
+          setDebugInfo(JSON.stringify(data.debug, null, 2));
+        }
+        throw new Error(data.message || `Error during signup (${response.status})`);
       }
 
       // Redirect to login page after successful signup
@@ -115,6 +122,9 @@ export default function Signup() {
                 <div className="flex">
                   <div className="ml-3">
                     <h3 className="text-sm font-medium text-red-800">{error}</h3>
+                    {debugInfo && (
+                      <pre className="mt-2 text-xs text-red-700 overflow-auto max-h-32">{debugInfo}</pre>
+                    )}
                   </div>
                 </div>
               </div>
@@ -152,5 +162,31 @@ export default function Signup() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Signup() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div className="sm:mx-auto sm:w-full sm:max-w-md">
+          <div className="flex justify-center">
+            <Video className="h-12 w-12 text-blue-600" />
+          </div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Create your account
+          </h2>
+          <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+            <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+              <div className="flex justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }>
+      <SignupContent />
+    </Suspense>
   );
 } 
