@@ -79,4 +79,4 @@ jobs:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
       run: |
         cd apps/backend
-        railway up --service editai-backend
+        railway up --service editai-video-processor
