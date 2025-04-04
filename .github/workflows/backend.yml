@@ -75,13 +75,7 @@ jobs:
       run: npm install @railway/cli
 
     - name: Deploy to Railway
-      env:
-        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        RAILWAY_PROJECT_ID: "84a4f1cb-fa17-45d2-8fb9-9360126210ff"
-      run: |
-        cd apps/backend
-        echo "Available services:"
-        npx railway service
-        echo "Deploying to Railway..."
-        npx railway link
-        npx railway up
+      uses: bervProject/railway-deploy@main
+      with:
+        railway_token: ${{ secrets.RAILWAY_TOKEN }}
+        service: editai-backend
