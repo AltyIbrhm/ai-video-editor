@@ -1,3 +1,7 @@
+# AI Video Editor Frontend
+
+![Frontend CI/CD](https://github.com/ibrahimraimi/ai-video-editor/actions/workflows/frontend.yml/badge.svg)
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
