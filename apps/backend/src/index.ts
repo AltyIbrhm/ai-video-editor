@@ -47,4 +47,7 @@ if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
   });
-} 
+}
+
+// Adding a comment to trigger CI/CD
+// Triggering CI/CD pipeline 
