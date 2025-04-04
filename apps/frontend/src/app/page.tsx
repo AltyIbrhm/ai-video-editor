@@ -5,7 +5,7 @@ import { CallToAction } from './_landing-sections/call-to-action';
 
 export const metadata: Metadata = {
   title: 'EditAI - Transform Your Videos with AI',
-  description: 'Edit, enhance, and create stunning videos with the power of artificial intelligence.',
+  description: 'Experience the future of video editing. Create professional-quality videos effortlessly with AI-powered tools for seamless editing, automatic enhancements, and quick exports.',
 };
 
 export default function HomePage() {
