@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import { HeroSection } from './_components/hero-section';
-import { FeatureGrid } from './_components/feature-grid';
-import { CallToAction } from './_components/call-to-action';
+import { HeroSection } from './_landing-sections/hero-section';
+import { FeatureGrid } from './_landing-sections/feature-grid';
+import { CallToAction } from './_landing-sections/call-to-action';
 
 export const metadata: Metadata = {
   title: 'EditAI - Transform Your Videos with AI',
