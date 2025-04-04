@@ -1,20 +1,28 @@
 import type { Metadata } from 'next';
 import { HeroSection } from './_landing-sections/hero-section';
 import { FeatureGrid } from './_landing-sections/feature-grid';
-import { CallToAction } from './_landing-sections/call-to-action';
+import { Testimonials } from './_landing-sections/testimonials';
+import { Pricing } from './_landing-sections/pricing';
+import { FAQ } from './_landing-sections/faq';
+import { CallToAction } from './_landing-sections/cta';
 
 export const metadata: Metadata = {
   title: 'EditAI - Transform Your Videos with AI',
   description: 'Experience the future of video editing. Create professional-quality videos effortlessly with AI-powered tools for seamless editing, automatic enhancements, and quick exports.',
 };
 
-export default function HomePage() {
+export default function Page() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-white to-gray-50 pt-16">
-      <div className="container px-4 py-24 mx-auto">
+    <main className="flex flex-col min-h-screen">
+      <div className="flex-1">
         <HeroSection />
-        <FeatureGrid />
-        <CallToAction />
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <FeatureGrid />
+          <Testimonials />
+          <Pricing />
+          <FAQ />
+          <CallToAction />
+        </div>
       </div>
     </main>
   );
