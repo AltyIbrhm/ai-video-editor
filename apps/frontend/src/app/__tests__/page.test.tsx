@@ -32,4 +32,19 @@ describe('Page', () => {
     
     expect(link).toBeInTheDocument();
   });
+
+  it('renders feature highlights', () => {
+    render(<Page />);
+    
+    const features = [
+      'Smart Editing',
+      'Auto Enhancement',
+      'Quick Export'
+    ];
+
+    features.forEach(feature => {
+      const heading = screen.getByRole('heading', { name: feature });
+      expect(heading).toBeInTheDocument();
+    });
+  });
 }); 

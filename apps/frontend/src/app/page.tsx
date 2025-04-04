@@ -17,6 +17,20 @@ export default function Page() {
           <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
             Edit, enhance, and create stunning videos with the power of artificial intelligence.
           </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-8">
+            <div className="p-4 rounded-lg bg-white shadow-sm">
+              <h3 className="font-semibold text-lg text-gray-900">Smart Editing</h3>
+              <p className="text-gray-600 mt-2">AI-powered tools for seamless video editing</p>
+            </div>
+            <div className="p-4 rounded-lg bg-white shadow-sm">
+              <h3 className="font-semibold text-lg text-gray-900">Auto Enhancement</h3>
+              <p className="text-gray-600 mt-2">Automatic color correction and quality improvement</p>
+            </div>
+            <div className="p-4 rounded-lg bg-white shadow-sm">
+              <h3 className="font-semibold text-lg text-gray-900">Quick Export</h3>
+              <p className="text-gray-600 mt-2">Fast rendering and multiple format support</p>
+            </div>
+          </div>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mt-10">
             <a
               href="#"
