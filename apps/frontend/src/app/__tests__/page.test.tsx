@@ -1,14 +1,51 @@
 import '@testing-library/jest-dom';
-import { render } from '@testing-library/react';
-import RootPage from '../page';
+import { render, screen } from '@testing-library/react';
+import HomePage from '../page';
 
-jest.mock('next/navigation', () => ({
-  redirect: jest.fn(),
-}));
+describe('HomePage', () => {
+  it('renders the main heading', () => {
+    render(<HomePage />);
+    
+    const heading = screen.getByRole('heading', {
+      name: /transform your videos with ai/i,
+    });
+    
+    expect(heading).toBeInTheDocument();
+  });
 
-describe('RootPage', () => {
-  it('redirects to home page', () => {
-    render(<RootPage />);
-    expect(require('next/navigation').redirect).toHaveBeenCalledWith('/home');
+  it('renders the get started button', () => {
+    render(<HomePage />);
+    
+    const button = screen.getByRole('link', {
+      name: /get started/i,
+    });
+    
+    expect(button).toBeInTheDocument();
+    expect(button).toHaveClass('bg-blue-600');
+  });
+
+  it('renders the learn more link', () => {
+    render(<HomePage />);
+    
+    const link = screen.getByRole('link', {
+      name: /learn more/i,
+    });
+    
+    expect(link).toBeInTheDocument();
+  });
+
+  it('renders feature highlights', () => {
+    render(<HomePage />);
+    
+    const features = [
+      'Smart Editing',
+      'Auto Enhancement',
+      'Quick Export'
+    ];
+
+    features.forEach(feature => {
+      const heading = screen.getByRole('heading', { name: feature });
+      expect(heading).toBeInTheDocument();
+    });
   });
 }); 
