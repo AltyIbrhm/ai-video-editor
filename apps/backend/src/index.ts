@@ -23,7 +23,12 @@ app.use(express.json());
 
 // Basic health check endpoint
 app.get('/health', (req: Request, res: Response) => {
-  res.json({ status: 'ok', service: 'editai-backend' });
+  res.json({
+    status: 'ok',
+    service: 'editai-backend',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
 });
 
 // Basic API endpoint
