@@ -72,13 +72,13 @@ jobs:
         npm run build
 
     - name: Install Railway CLI
-      run: npm install -g @railway/cli
+      run: npm install @railway/cli
 
     - name: Deploy to Railway
       env:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
       run: |
         cd apps/backend
-        railway login --token ${{ secrets.RAILWAY_TOKEN }}
-        railway link --project 84a4f1cb-fa17-45d2-8fb9-9360126210ff
-        railway up --service editai-backend
+        npx railway login --token ${{ secrets.RAILWAY_TOKEN }}
+        npx railway link --project 84a4f1cb-fa17-45d2-8fb9-9360126210ff
+        npx railway up --service editai-backend
