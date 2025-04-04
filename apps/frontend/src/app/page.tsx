@@ -4,7 +4,7 @@ import { FeatureGrid } from './_landing-sections/feature-grid';
 import { Testimonials } from './_landing-sections/testimonials';
 import { Pricing } from './_landing-sections/pricing';
 import { FAQ } from './_landing-sections/faq';
-import { CallToAction } from './_landing-sections/cta';
+import { CallToAction } from './_landing-sections/call-to-action';
 
 export const metadata: Metadata = {
   title: 'EditAI - Transform Your Videos with AI',

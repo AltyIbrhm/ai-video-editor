@@ -1,16 +1,13 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import Navbar from '@/components/navbar';
+import ClientLayout from '@/components/client-layout';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: {
-    template: '%s | EditAI',
-    default: 'EditAI - AI-Powered Video Editor',
-  },
-  description: 'Transform your videos with the power of AI',
+  title: 'EditAI - AI Video Editor',
+  description: 'Edit your videos with the power of AI',
 };
 
 export default function RootLayout({
@@ -19,11 +16,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head />
-      <body className={inter.className}>
-        <Navbar />
-        {children}
+    <html lang="en" className="h-full bg-gray-50">
+      <body className={`h-full ${inter.className}`}>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );
