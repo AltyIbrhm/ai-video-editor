@@ -25,7 +25,7 @@ app.use(express.json());
 app.get('/health', (req: Request, res: Response) => {
   res.json({
     status: 'ok',
-    service: 'backend',
+    service: 'editai-backend',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development'
   });
@@ -35,8 +35,8 @@ app.get('/health', (req: Request, res: Response) => {
 app.get('/api/v1/status', (req: Request, res: Response) => {
   res.json({
     status: 'operational',
-    version: '1.0.14',
-    serviceName: 'backend',
+    version: '1.0.17',
+    serviceName: 'editai-backend',
     environment: process.env.NODE_ENV || 'development',
     timestamp: new Date().toISOString()
   });

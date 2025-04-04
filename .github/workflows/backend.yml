@@ -80,4 +80,4 @@ jobs:
         RAILWAY_PROJECT_ID: "84a4f1cb-fa17-45d2-8fb9-9360126210ff"
       run: |
         cd apps/backend
-        npx railway up --service backend
+        npx railway up
