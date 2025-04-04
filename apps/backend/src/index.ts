@@ -31,7 +31,9 @@ app.get('/api/v1/status', (req: Request, res: Response) => {
   res.json({
     status: 'operational',
     version: '1.0.0',
-    serviceName: 'editai-video-processor'
+    serviceName: 'editai-video-processor',
+    environment: process.env.NODE_ENV || 'development',
+    timestamp: new Date().toISOString()
   });
 });
 
