@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "dev": "turbo run dev",
-    "build": "turbo run build",
+    "build": "turbo run build --filter=frontend^...",
     "start": "turbo run start",
     "lint": "turbo run lint"
   },
