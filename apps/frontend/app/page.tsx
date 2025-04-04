@@ -6,7 +6,7 @@ export default function Home() {
       <h1 className="text-4xl font-bold mb-8">AI Video Editor</h1>
       
       <div className="space-y-4">
-        <p className="text-lg">Welcome to the AI Video Editor platform.</p>
+        <p className="text-lg">Welcome to EditAI - Your AI-powered video editing platform.</p>
         
         <div className="flex space-x-4">
           <Link 
