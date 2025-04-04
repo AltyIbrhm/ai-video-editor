@@ -5,8 +5,8 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'AI Video Editor',
-  description: 'Edit videos with AI',
+  title: 'EditAI - AI Video Editor',
+  description: 'Edit videos with AI - Fast, Easy, and Powerful',
 };
 
 export default function RootLayout({
