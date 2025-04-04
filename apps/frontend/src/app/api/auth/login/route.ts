@@ -1,73 +1,72 @@
 import { NextResponse } from 'next/server';
-import { SignJWT } from 'jose';
-import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'development-secret-key';
+import { verifyPassword, generateToken } from '@/lib/auth';
+import { cookies } from 'next/headers';
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { email, password } = body;
+    const { email, password } = await request.json();
 
-    console.log('Login attempt for email:', email);
+    // Validate input
+    if (!email || !password) {
+      return NextResponse.json(
+        { message: 'Email and password are required' },
+        { status: 400 }
+      );
+    }
 
-    // Find user by email
+    // Find user
     const user = await prisma.user.findUnique({
       where: { email },
     });
 
     if (!user) {
-      console.log('User not found:', email);
       return NextResponse.json(
-        { message: 'Invalid credentials' },
+        { message: 'Invalid email or password' },
         { status: 401 }
       );
     }
 
     // Verify password
-    const passwordValid = await bcrypt.compare(password, user.password);
-
-    if (!passwordValid) {
-      console.log('Invalid password for user:', email);
+    const isValidPassword = await verifyPassword(password, user.password);
+    if (!isValidPassword) {
       return NextResponse.json(
-        { message: 'Invalid credentials' },
+        { message: 'Invalid email or password' },
         { status: 401 }
       );
     }
 
+    // Check if email is verified
+    if (!user.emailVerified) {
+      return NextResponse.json(
+        { message: 'Please verify your email before logging in' },
+        { status: 403 }
+      );
+    }
+
     // Generate JWT token
-    const encoder = new TextEncoder();
-    const secretKey = encoder.encode(JWT_SECRET);
-
-    const token = await new SignJWT({ 
+    const token = await generateToken({
       userId: user.id,
-      email: user.email
-    })
-      .setProtectedHeader({ alg: 'HS256' })
-      .setIssuedAt()
-      .setExpirationTime('7d') // Token expires in 7 days
-      .sign(secretKey);
+      email: user.email,
+    });
 
-    console.log('Login successful for user:', email);
-
-    // Create redirect response
-    const response = NextResponse.redirect(new URL('/dashboard', request.url), 302);
-
-    // Set the token cookie
+    // Create response with redirect
+    const response = NextResponse.redirect(new URL('/dashboard', request.url));
+    
+    // Set cookie in the response
     response.cookies.set('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
+      maxAge: 60 * 60, // 1 hour
       path: '/',
-      maxAge: 7 * 24 * 60 * 60 // 7 days
     });
 
     return response;
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json(
-      { message: 'An error occurred during login' },
+      { message: 'Error during login' },
       { status: 500 }
     );
   }

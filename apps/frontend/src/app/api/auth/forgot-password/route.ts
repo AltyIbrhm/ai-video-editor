@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { sendPasswordResetEmail } from '@/lib/email';
+import crypto from 'crypto';
 
 export async function POST(request: Request) {
   try {
@@ -19,34 +20,38 @@ export async function POST(request: Request) {
       where: { email },
     });
 
+    // Don't reveal if user exists
     if (!user) {
-      // Return success even if user doesn't exist to prevent email enumeration
-      return NextResponse.json(
-        { message: 'If an account exists with this email, you will receive a password reset link' },
-        { status: 200 }
-      );
+      return NextResponse.json({
+        message: 'If an account exists with that email, a password reset link will be sent.',
+      });
     }
 
     // Generate reset token
-    const resetToken = await prisma.passwordResetToken.create({
+    const token = crypto.randomBytes(32).toString('hex');
+    const expires = new Date(Date.now() + 1 * 60 * 60 * 1000); // 1 hour
+
+    // Save reset token
+    await prisma.passwordResetToken.create({
       data: {
+        token,
+        expires,
         userId: user.id,
-        token: Math.random().toString(36).substring(2),
-        expires: new Date(Date.now() + 1 * 60 * 60 * 1000), // 1 hour
       },
     });
 
     // Send reset email
-    await sendPasswordResetEmail(user.email, resetToken.token);
+    const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL}/auth/reset-password?token=${token}`;
+    await sendPasswordResetEmail(email, resetUrl);
 
-    return NextResponse.json(
-      { message: 'If an account exists with this email, you will receive a password reset link' },
-      { status: 200 }
-    );
+    return NextResponse.json({
+      message: 'If an account exists with that email, a password reset link will be sent.',
+      debug: process.env.NODE_ENV === 'development' ? { resetUrl } : undefined,
+    });
   } catch (error) {
     console.error('Forgot password error:', error);
     return NextResponse.json(
-      { message: 'Something went wrong' },
+      { message: 'Error processing request' },
       { status: 500 }
     );
   }

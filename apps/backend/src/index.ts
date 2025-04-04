@@ -3,13 +3,13 @@ import { Request, Response } from 'express';
 import cors from 'cors';
 
 export const app = express();
-const port = process.env.PORT || 3002;
+const port = process.env.PORT || 4000;
 
 // CORS configuration
 const corsOptions = {
   origin: process.env.NODE_ENV === 'production' 
     ? ['https://editai.app', 'https://www.editai.app']  // Production domains
-    : ['http://localhost:3000'],                        // Development domain
+    : ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://localhost:3003'],  // Development domains
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed methods
   allowedHeaders: ['Content-Type', 'Authorization'],    // Allowed headers
   credentials: true                                     // Allow credentials

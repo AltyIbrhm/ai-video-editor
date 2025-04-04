@@ -3,12 +3,18 @@
 import { useState } from 'react';
 import { Video, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function Login() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  // Show success message if email was just verified
+  const showVerifiedMessage = searchParams.get('verified') === 'true';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,22 +26,24 @@ export default function Login() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
-        credentials: 'include',
-        redirect: 'follow',
       });
 
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Failed to login');
+      }
+
+      // Check if we got a redirect response
       if (response.redirected) {
-        // If we get a redirect response, follow it
         window.location.href = response.url;
         return;
       }
 
-      // If we get here, it means we got a JSON response (probably an error)
-      const data = await response.json();
-      setError(data.message || 'An error occurred');
+      // If we get here without a redirect, something went wrong
+      throw new Error('No redirect received after login');
     } catch (error) {
       console.error('Login error:', error);
-      setError('An error occurred while logging in');
+      setError(error instanceof Error ? error.message : 'An error occurred while logging in');
     } finally {
       setIsLoading(false);
     }
@@ -48,12 +56,49 @@ export default function Login() {
           <Video className="h-12 w-12 text-blue-600" />
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Welcome back to EditAI
+          Sign in to your account
         </h2>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          {showVerifiedMessage && (
+            <div className="rounded-md bg-green-50 p-4 mb-6">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg
+                    className="h-5 w-5 text-green-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm font-medium text-green-800">
+                    Email verified successfully! You can now sign in.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {error && (
+            <div className="rounded-md bg-red-50 p-4 mb-6">
+              <div className="flex">
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-red-800">{error}</h3>
+                </div>
+              </div>
+            </div>
+          )}
+
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -93,16 +138,6 @@ export default function Login() {
               </div>
             </div>
 
-            {error && (
-              <div className="rounded-md bg-red-50 p-4">
-                <div className="flex">
-                  <div className="ml-3">
-                    <h3 className="text-sm font-medium text-red-800">{error}</h3>
-                  </div>
-                </div>
-              </div>
-            )}
-
             <div className="space-y-4">
               <button
                 type="submit"
@@ -138,6 +173,34 @@ export default function Login() {
               </div>
             </div>
           </form>
+
+          <div className="mt-6">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">
+                  Or continue with
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-6 grid grid-cols-1 gap-3">
+              <Link
+                href="/auth/forgot-password"
+                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+              >
+                Forgot password?
+              </Link>
+              <Link
+                href="/auth/signup"
+                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+              >
+                Create new account
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </div>
