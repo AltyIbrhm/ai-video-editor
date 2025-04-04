@@ -26,11 +26,11 @@ describe('HomePage', () => {
   it('renders the learn more link', () => {
     render(<HomePage />);
     
-    const link = screen.getByRole('link', {
-      name: /learn more/i,
-    });
+    const link = screen.getByTestId('hero-learn-more');
     
     expect(link).toBeInTheDocument();
+    expect(link).toHaveClass('bg-gray-100');
+    expect(link).toHaveTextContent(/learn more/i);
   });
 
   it('renders feature highlights', () => {

@@ -65,6 +65,7 @@ export function HeroSection() {
             </a>
             <a
               href="#"
+              data-testid="hero-learn-more"
               className="inline-flex items-center px-8 py-3 rounded-lg bg-gray-100 text-gray-900 hover:bg-gray-200 transition-colors duration-200 font-medium"
             >
               Learn More
