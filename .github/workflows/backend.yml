@@ -81,5 +81,7 @@ jobs:
       run: |
         cd apps/backend
         echo "Available services:"
-        npx railway service list
+        npx railway service
+        echo "Deploying to Railway..."
+        npx railway link
         npx railway up
