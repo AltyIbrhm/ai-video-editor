@@ -8,7 +8,8 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '10mb'  // Needed for video upload
     }
-  }
+  },
+  output: 'standalone'
 };
 
 module.exports = nextConfig; 

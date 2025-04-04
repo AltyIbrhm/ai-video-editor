@@ -20,7 +20,7 @@ export default function TestApi() {
 
   return (
     <div className="min-h-screen p-8">
-      <h1 className="text-2xl font-bold mb-4">API Testt Page</h1>
+      <h1 className="text-2xl font-bold mb-4">API Test Page</h1>
       {error ? (
         <div className="text-red-500 p-4 bg-red-50 rounded">
           Error: {error}
