@@ -78,5 +78,5 @@ jobs:
       uses: bervProject/railway-deploy@main
       with:
         railway_token: ${{ secrets.RAILWAY_TOKEN }}
-        service: editai-backend
+        service: ai-video-editor-backend
         root_dir: apps/backend
