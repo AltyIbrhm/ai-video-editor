@@ -5,8 +5,8 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'EditAI - AI Video Editor',
-  description: 'Edit videos with AI - Fast, Easy, and Powerful',
+  title: 'EditAI - AI-Powered Video Editor',
+  description: 'Transform your videos with the power of AI using EditAI',
 };
 
 export default function RootLayout({
@@ -15,8 +15,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="en" className="scroll-smooth">
+      <body className={`${inter.className} antialiased`}>
         {children}
       </body>
     </html>
