@@ -11,7 +11,7 @@ on:
       - 'apps/backend/**'
 
 jobs:
-  build:
+  lint-and-test:
     runs-on: ubuntu-latest
     
     steps:
@@ -25,7 +25,39 @@ jobs:
         
     - name: Install Dependencies
       run: |
+        npm install
+        
+    - name: Lint
+      run: |
         cd apps/backend
+        npm run lint
+        
+    - name: Type Check
+      run: |
+        cd apps/backend
+        npx tsc --noEmit
+        
+    - name: Run Tests
+      run: |
+        cd apps/backend
+        npm run test
+        
+  build:
+    needs: lint-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install Dependencies
+      run: |
         npm install
         
     - name: Build
@@ -33,13 +65,10 @@ jobs:
         cd apps/backend
         npm run build
         
-    - name: Run Tests
-      run: |
-        cd apps/backend
-        npm test
-      
-    # Deploy step will be added once we have hosting setup
-    # - name: Deploy
-    #   if: github.ref == 'refs/heads/main'
+    # We'll add Railway deployment here once we set up Railway
+    # - name: Deploy to Railway
+    #   env:
+    #     RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
     #   run: |
-    #     # Deploy to production 
+    #     npm install -g @railway/cli
+    #     railway up --service=backend
