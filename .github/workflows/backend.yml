@@ -74,9 +74,11 @@ jobs:
     - name: Install Railway CLI
       run: npm install @railway/cli
 
+    - name: Change to backend directory
+      run: cd apps/backend
+
     - name: Deploy to Railway
       uses: bervProject/railway-deploy@main
       with:
         railway_token: ${{ secrets.RAILWAY_TOKEN }}
-        service: ai-video-editor-backend
-        root_dir: apps/backend
+        service: editai-backend
