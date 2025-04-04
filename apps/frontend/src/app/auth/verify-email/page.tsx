@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
-export default function VerifyEmail() {
+function VerifyEmailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
@@ -15,6 +15,8 @@ export default function VerifyEmail() {
     const verifyEmail = async () => {
       try {
         const token = searchParams.get('token');
+        console.log('Verifying with token:', token);
+        
         if (!token) {
           setStatus('error');
           setMessage('Verification token is missing');
@@ -22,6 +24,7 @@ export default function VerifyEmail() {
         }
 
         const response = await fetch(`/api/auth/verify-email?token=${token}`);
+        console.log('Verification response:', response);
         const data = await response.json();
 
         if (!response.ok) {
@@ -40,7 +43,7 @@ export default function VerifyEmail() {
         }
 
         setStatus('success');
-        setMessage('Email verified successfully!');
+        setMessage(data.message || 'Email verified successfully!');
         setIsRedirecting(true);
         router.push('/auth/login?verified=true');
       } catch (error) {
@@ -129,5 +132,28 @@ export default function VerifyEmail() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function VerifyEmail() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div className="sm:mx-auto sm:w-full sm:max-w-md">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Email Verification
+          </h2>
+          <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+            <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+              <div className="flex justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }>
+      <VerifyEmailContent />
+    </Suspense>
   );
 } 

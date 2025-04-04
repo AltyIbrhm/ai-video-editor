@@ -10,7 +10,11 @@ const nextConfig = {
     }
   },
   distDir: '.next',
-  output: 'standalone'
+  output: 'standalone',
+  // Disable static optimization for all routes
+  staticPageGenerationTimeout: 300,
+  // Configure output for Server-Side Rendering instead of Static Generation
+  output: 'server',
 };
 
 module.exports = nextConfig; 
