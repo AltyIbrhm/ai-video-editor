@@ -5,10 +5,12 @@ describe('Health Check Endpoints', () => {
   it('should return ok status for /health', async () => {
     const response = await request(app).get('/health');
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({
+    expect(response.body).toMatchObject({
       status: 'ok',
       service: 'editai-backend'
     });
+    expect(response.body).toHaveProperty('timestamp');
+    expect(response.body).toHaveProperty('environment');
   });
 
   it('should return status info for /api/v1/status', async () => {
