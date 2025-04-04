@@ -38,11 +38,10 @@ jobs:
         cd apps/frontend
         npx tsc --noEmit
         
-    # Tests temporarily disabled until Jest is properly configured
-    # - name: Run Tests
-    #   run: |
-    #     cd apps/frontend
-    #     npm run test
+    - name: Run Tests
+      run: |
+        cd apps/frontend
+        npm run test
         
   deploy:
     needs: lint-and-test
