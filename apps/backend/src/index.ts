@@ -35,7 +35,7 @@ app.get('/health', (req: Request, res: Response) => {
 app.get('/api/v1/status', (req: Request, res: Response) => {
   res.json({
     status: 'operational',
-    version: '1.0.0',
+    version: '1.0.1',
     serviceName: 'editai-video-processor',
     environment: process.env.NODE_ENV || 'development',
     timestamp: new Date().toISOString()
