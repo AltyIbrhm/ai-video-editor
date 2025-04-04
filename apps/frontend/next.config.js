@@ -9,6 +9,7 @@ const nextConfig = {
       bodySizeLimit: '10mb'  // Needed for video upload
     }
   },
+  distDir: '.next',
   output: 'standalone'
 };
 
