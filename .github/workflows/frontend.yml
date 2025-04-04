@@ -5,6 +5,8 @@ on:
     branches: [ main ]
     paths:
       - 'apps/frontend/**'
+    tags:
+      - 'v*'  # Deploy on version tags
   pull_request:
     branches: [ main ]
     paths:
@@ -46,7 +48,11 @@ jobs:
   deploy:
     needs: lint-and-test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    # Only deploy on version tags or specific commit messages
+    if: |
+      github.ref == 'refs/heads/main' && 
+      (startsWith(github.ref, 'refs/tags/v') || 
+       contains(github.event.head_commit.message, '[deploy]'))
     
     steps:
       - uses: actions/checkout@v3
