@@ -75,6 +75,9 @@ jobs:
       env:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
       run: |
-        npm install -g @railway/cli
         cd apps/backend
-        railway up --service ${{ secrets.RAILWAY_SERVICE_ID }}
+        npm install -g @railway/cli
+        railway init
+        railway link ${{ secrets.RAILWAY_PROJECT_ID }}
+        railway service ${{ secrets.RAILWAY_SERVICE_ID }}
+        railway up
