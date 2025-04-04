@@ -50,6 +50,26 @@ export function HeroSection() {
               </div>
             ))}
           </div>
+
+          {/* CTA Buttons */}
+          <div className="opacity-0 animate-fade-in [animation-delay:1200ms] flex gap-4 justify-center mt-8">
+            <a
+              href="#"
+              data-testid="hero-cta"
+              className="inline-flex items-center px-8 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200 font-medium"
+            >
+              Get Started
+              <svg xmlns="http://www.w3.org/2000/svg" className="ml-2 -mr-1 w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </a>
+            <a
+              href="#"
+              className="inline-flex items-center px-8 py-3 rounded-lg bg-gray-100 text-gray-900 hover:bg-gray-200 transition-colors duration-200 font-medium"
+            >
+              Learn More
+            </a>
+          </div>
         </div>
       </div>
     </div>

@@ -16,12 +16,11 @@ describe('HomePage', () => {
   it('renders the get started button', () => {
     render(<HomePage />);
     
-    const button = screen.getByRole('link', {
-      name: /get started/i,
-    });
+    const button = screen.getByTestId('hero-cta');
     
     expect(button).toBeInTheDocument();
     expect(button).toHaveClass('bg-blue-600');
+    expect(button).toHaveTextContent(/get started/i);
   });
 
   it('renders the learn more link', () => {
