@@ -26,31 +26,28 @@ function LoginContent() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
+        credentials: 'include'
       });
 
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || 'Failed to login');
-      }
-
+      console.log('Login response status:', response.status);
       const data = await response.json();
-      console.log('Login response:', data);
+      console.log('Login response data:', data);
       
       if (data.success && data.redirectTo) {
-        console.log('Redirecting to:', data.redirectTo);
+        console.log('Login successful, waiting before redirect...');
         // Add a small delay to ensure cookie is set
-        setIsLoading(true);
-        setTimeout(() => {
-          router.push(data.redirectTo);
-        }, 1000);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Use replace instead of push to avoid back button issues
+        console.log('Redirecting to dashboard...');
+        router.replace('/dashboard');
         return;
       }
 
-      throw new Error('Invalid response from server');
+      throw new Error(data.message || 'Invalid response from server');
     } catch (error) {
       console.error('Login error:', error);
       setError(error instanceof Error ? error.message : 'An error occurred while logging in');
-    } finally {
       setIsLoading(false);
     }
   };
