@@ -8,7 +8,9 @@ function getBaseUrl() {
 }
 
 export async function POST(request: Request) {
-  console.log('Login API: Received request');
+  const isProduction = process.env.NODE_ENV === 'production';
+  console.log('Login API: Environment:', isProduction ? 'production' : 'development');
+  console.log('Login API: Request URL:', request.url);
   
   try {
     // Parse request body
@@ -76,6 +78,11 @@ export async function POST(request: Request) {
       email: user.email,
     });
 
+    // Get the domain from the request URL
+    const requestUrl = new URL(request.url);
+    const domain = isProduction ? '.editai.app' : requestUrl.hostname;
+    console.log('Login API: Using domain:', domain);
+
     // Create response
     const response = NextResponse.json(
       { 
@@ -96,25 +103,22 @@ export async function POST(request: Request) {
     );
 
     // Set cookie with domain-specific settings
-    const isProduction = process.env.NODE_ENV === 'production';
-    console.log('Login API: Setting cookie in', isProduction ? 'production' : 'development');
-    
+    console.log('Login API: Setting cookie with following settings:', {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: 'lax',
+      path: '/',
+      domain: domain,
+      maxAge: 60 * 60
+    });
+
     response.cookies.set('token', token, {
       httpOnly: true,
       secure: isProduction,
       sameSite: 'lax',
       path: '/',
-      domain: isProduction ? '.editai.app' : undefined, // Set domain in production
+      domain: domain,
       maxAge: 60 * 60 // 1 hour
-    });
-
-    console.log('Login API: Cookie settings:', {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: 'lax',
-      path: '/',
-      domain: isProduction ? '.editai.app' : undefined,
-      maxAge: 60 * 60
     });
 
     console.log('Login API: Login successful');

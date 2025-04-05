@@ -22,7 +22,12 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   console.log('Middleware: Processing request for path:', pathname);
   console.log('Middleware: Environment:', isProduction ? 'production' : 'development');
-  console.log('Middleware: Cookies:', request.cookies.getAll().map(c => `${c.name}=${c.value.substring(0, 10)}...`));
+  console.log('Middleware: Request URL:', request.url);
+
+  // Get domain from request URL
+  const requestUrl = new URL(request.url);
+  const domain = isProduction ? '.editai.app' : requestUrl.hostname;
+  console.log('Middleware: Using domain:', domain);
 
   // Check if the path is public
   const isPublicPath = PUBLIC_PATHS.some(path => pathname.startsWith(path));
@@ -34,6 +39,7 @@ export async function middleware(request: NextRequest) {
   // Get token from cookies
   const token = request.cookies.get('token')?.value;
   console.log('Middleware: Token present:', !!token);
+  console.log('Middleware: All cookies:', request.cookies.getAll().map(c => `${c.name}=${c.value.substring(0, 10)}...`));
 
   if (!token) {
     console.log('Middleware: No token found, redirecting to login');
@@ -41,7 +47,11 @@ export async function middleware(request: NextRequest) {
     const response = NextResponse.redirect(loginUrl);
     
     // Clear any existing invalid cookies
-    response.cookies.delete('token');
+    response.cookies.delete({
+      name: 'token',
+      path: '/',
+      domain: domain
+    });
     
     return response;
   }
@@ -54,17 +64,15 @@ export async function middleware(request: NextRequest) {
     // Token is valid, proceed
     const response = NextResponse.next();
     
-    // Ensure cookie is set with correct domain in production
-    if (isProduction) {
-      response.cookies.set('token', token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'lax',
-        path: '/',
-        domain: '.editai.app',
-        maxAge: 60 * 60 // 1 hour
-      });
-    }
+    // Ensure cookie is set with correct domain
+    response.cookies.set('token', token, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: 'lax',
+      path: '/',
+      domain: domain,
+      maxAge: 60 * 60 // 1 hour
+    });
     
     return response;
   } catch (error) {
@@ -74,16 +82,12 @@ export async function middleware(request: NextRequest) {
     const loginUrl = new URL('/auth/login', request.url);
     const response = NextResponse.redirect(loginUrl);
     
-    // Clear invalid token with correct domain
-    if (isProduction) {
-      response.cookies.delete({
-        name: 'token',
-        path: '/',
-        domain: '.editai.app'
-      });
-    } else {
-      response.cookies.delete('token');
-    }
+    // Clear invalid token
+    response.cookies.delete({
+      name: 'token',
+      path: '/',
+      domain: domain
+    });
     
     return response;
   }
