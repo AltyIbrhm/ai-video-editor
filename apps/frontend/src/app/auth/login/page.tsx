@@ -34,9 +34,11 @@ function LoginContent() {
       }
 
       const data = await response.json();
+      console.log('Login response:', data);
       
       if (data.success && data.redirectTo) {
-        router.push(data.redirectTo);
+        console.log('Redirecting to:', data.redirectTo);
+        router.replace(data.redirectTo);
         return;
       }
 

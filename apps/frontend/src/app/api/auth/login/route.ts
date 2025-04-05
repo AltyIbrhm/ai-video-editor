@@ -50,24 +50,36 @@ export async function POST(request: Request) {
       email: user.email,
     });
 
-    // Create cookies in the response
-    const cookieStore = cookies();
-    cookieStore.set('token', token, {
+    // Create response with proper headers
+    const response = NextResponse.json(
+      { 
+        success: true,
+        redirectTo: '/dashboard',
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email
+        }
+      },
+      { 
+        status: 200,
+        headers: {
+          'Cache-Control': 'no-store, max-age=0',
+        }
+      }
+    );
+
+    // Set cookie in the response
+    response.cookies.set('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 60 * 60, // 1 hour
       path: '/',
+      domain: process.env.NODE_ENV === 'production' ? '.editai.app' : undefined
     });
 
-    // Return success response with redirect URL
-    return NextResponse.json(
-      { 
-        success: true,
-        redirectTo: '/dashboard'
-      },
-      { status: 200 }
-    );
+    return response;
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json(
