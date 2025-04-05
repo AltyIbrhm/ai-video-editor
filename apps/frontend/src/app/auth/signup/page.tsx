@@ -36,8 +36,8 @@ function SignupContent() {
         throw new Error(data.message || `Error during signup (${response.status})`);
       }
 
-      // Redirect to login page after successful signup
-      window.location.href = '/auth/login';
+      // Redirect to verification page after successful signup
+      window.location.href = `/auth/verify-email-sent?email=${encodeURIComponent(email)}`;
     } catch (error) {
       console.error('Signup error:', error);
       setError(error instanceof Error ? error.message : 'An error occurred during signup');
