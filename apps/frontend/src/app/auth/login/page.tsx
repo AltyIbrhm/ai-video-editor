@@ -22,29 +22,48 @@ function LoginContent() {
     setIsLoading(true);
 
     try {
+      console.log('Attempting login with email:', email);
+      
       const response = await fetch('/api/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ 
+          email: email.trim(), 
+          password: password 
+        }),
         credentials: 'include'
       });
 
       console.log('Login response status:', response.status);
-      const data = await response.json();
-      console.log('Login response data:', data);
       
-      if (data.success && data.redirectTo) {
+      let data;
+      try {
+        data = await response.json();
+        console.log('Login response data:', data);
+      } catch (parseError) {
+        console.error('Failed to parse response:', parseError);
+        throw new Error('Invalid response from server');
+      }
+      
+      if (response.ok && data.success) {
         console.log('Login successful, waiting before redirect...');
-        // Add a small delay to ensure cookie is set
-        await new Promise(resolve => setTimeout(resolve, 1000));
         
-        // Use replace instead of push to avoid back button issues
+        // Add a longer delay to ensure cookie is properly set
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
         console.log('Redirecting to dashboard...');
-        router.replace('/dashboard');
+        // Use window.location.href instead of router.replace
+        const baseUrl = window.location.origin;
+        const dashboardUrl = `${baseUrl}/dashboard`;
+        console.log('Redirecting to:', dashboardUrl);
+        window.location.href = dashboardUrl;
         return;
       }
 
-      throw new Error(data.message || 'Invalid response from server');
+      throw new Error(data.message || `Login failed with status ${response.status}`);
     } catch (error) {
       console.error('Login error:', error);
       setError(error instanceof Error ? error.message : 'An error occurred while logging in');

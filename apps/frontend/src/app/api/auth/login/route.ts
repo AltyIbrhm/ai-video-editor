@@ -8,11 +8,27 @@ function getBaseUrl() {
 }
 
 export async function POST(request: Request) {
+  console.log('Login API: Received request');
+  
   try {
-    const { email, password } = await request.json();
+    // Parse request body
+    let email, password;
+    try {
+      const body = await request.json();
+      email = body.email?.trim();
+      password = body.password;
+      console.log('Login API: Received login attempt for email:', email);
+    } catch (e) {
+      console.error('Login API: Failed to parse request body:', e);
+      return NextResponse.json(
+        { message: 'Invalid request format' },
+        { status: 400 }
+      );
+    }
 
     // Validate input
     if (!email || !password) {
+      console.log('Login API: Missing email or password');
       return NextResponse.json(
         { message: 'Email and password are required' },
         { status: 400 }
@@ -20,11 +36,13 @@ export async function POST(request: Request) {
     }
 
     // Find user
+    console.log('Login API: Looking up user');
     const user = await prisma.user.findUnique({
       where: { email },
     });
 
     if (!user) {
+      console.log('Login API: User not found');
       return NextResponse.json(
         { message: 'Invalid email or password' },
         { status: 401 }
@@ -32,8 +50,10 @@ export async function POST(request: Request) {
     }
 
     // Verify password
+    console.log('Login API: Verifying password');
     const isValidPassword = await verifyPassword(password, user.password);
     if (!isValidPassword) {
+      console.log('Login API: Invalid password');
       return NextResponse.json(
         { message: 'Invalid email or password' },
         { status: 401 }
@@ -42,6 +62,7 @@ export async function POST(request: Request) {
 
     // Check if email is verified
     if (!user.emailVerified) {
+      console.log('Login API: Email not verified');
       return NextResponse.json(
         { message: 'Please verify your email before logging in' },
         { status: 403 }
@@ -49,12 +70,13 @@ export async function POST(request: Request) {
     }
 
     // Generate JWT token
+    console.log('Login API: Generating token');
     const token = await generateToken({
       userId: user.id,
       email: user.email,
     });
 
-    // Create response with proper headers
+    // Create response
     const response = NextResponse.json(
       { 
         success: true,
@@ -73,7 +95,8 @@ export async function POST(request: Request) {
       }
     );
 
-    // Set cookie in the response
+    // Set cookie
+    console.log('Login API: Setting token cookie');
     response.cookies.set('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -82,11 +105,12 @@ export async function POST(request: Request) {
       maxAge: 60 * 60 // 1 hour
     });
 
+    console.log('Login API: Login successful');
     return response;
   } catch (error) {
-    console.error('Login error:', error);
+    console.error('Login API: Error during login:', error);
     return NextResponse.json(
-      { message: 'Error during login' },
+      { message: 'An unexpected error occurred during login' },
       { status: 500 }
     );
   }
