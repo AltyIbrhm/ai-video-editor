@@ -3,6 +3,10 @@ import { prisma } from '@/lib/prisma';
 import { verifyPassword, generateToken } from '@/lib/auth';
 import { cookies } from 'next/headers';
 
+function getBaseUrl() {
+  return process.env.NEXT_PUBLIC_APP_URL || 'https://www.editai.app';
+}
+
 export async function POST(request: Request) {
   try {
     const { email, password } = await request.json();
@@ -50,11 +54,14 @@ export async function POST(request: Request) {
       email: user.email,
     });
 
+    const baseUrl = getBaseUrl();
+    const dashboardUrl = `${baseUrl}/dashboard`;
+
     // Create response with proper headers
     const response = NextResponse.json(
       { 
         success: true,
-        redirectTo: '/dashboard',
+        redirectTo: dashboardUrl,
         user: {
           id: user.id,
           name: user.name,
@@ -74,9 +81,8 @@ export async function POST(request: Request) {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 60 * 60, // 1 hour
       path: '/',
-      domain: process.env.NODE_ENV === 'production' ? '.editai.app' : undefined
+      maxAge: 60 * 60 // 1 hour
     });
 
     return response;
