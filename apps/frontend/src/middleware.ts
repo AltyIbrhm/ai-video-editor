@@ -28,7 +28,10 @@ export async function middleware(request: NextRequest) {
 
     if (!token) {
       console.log('Middleware: No token found, redirecting to login');
-      return NextResponse.redirect(new URL('/auth/login', request.url));
+      const response = NextResponse.redirect(new URL('/auth/login', request.url));
+      // Add cache control headers to prevent caching
+      response.headers.set('Cache-Control', 'no-store, max-age=0');
+      return response;
     }
 
     try {
@@ -53,10 +56,14 @@ export async function middleware(request: NextRequest) {
         maxAge: 60 * 60 // 1 hour
       });
 
+      // Add cache control headers
+      response.headers.set('Cache-Control', 'no-store, max-age=0');
       return response;
     } catch (error) {
       console.error('Middleware: Token verification failed:', error);
-      return NextResponse.redirect(new URL('/auth/login', request.url));
+      const response = NextResponse.redirect(new URL('/auth/login', request.url));
+      response.headers.set('Cache-Control', 'no-store, max-age=0');
+      return response;
     }
   }
 

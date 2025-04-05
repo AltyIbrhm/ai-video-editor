@@ -38,10 +38,11 @@ function LoginContent() {
       
       if (data.success && data.redirectTo) {
         console.log('Redirecting to:', data.redirectTo);
-        const baseUrl = window.location.origin;
-        const fullUrl = baseUrl + data.redirectTo;
-        console.log('Full redirect URL:', fullUrl);
-        window.location.href = fullUrl;
+        // Add a small delay to ensure cookie is set
+        setIsLoading(true);
+        setTimeout(() => {
+          router.push(data.redirectTo);
+        }, 1000);
         return;
       }
 
