@@ -14,15 +14,18 @@ const PUBLIC_PATHS = [
   '/api/auth/verify-email',
   '/api/auth/forgot-password',
   '/api/auth/reset-password',
+  '/api/auth/me',
 ];
 
 export async function middleware(request: NextRequest) {
   const isProduction = process.env.NODE_ENV === 'production';
-  console.log('Middleware: Processing request for:', request.url);
+  const { pathname } = request.nextUrl;
+  console.log('Middleware: Processing request for path:', pathname);
   console.log('Middleware: Environment:', isProduction ? 'production' : 'development');
+  console.log('Middleware: Cookies:', request.cookies.getAll().map(c => `${c.name}=${c.value.substring(0, 10)}...`));
 
   // Check if the path is public
-  const isPublicPath = PUBLIC_PATHS.some(path => request.nextUrl.pathname.startsWith(path));
+  const isPublicPath = PUBLIC_PATHS.some(path => pathname.startsWith(path));
   if (isPublicPath) {
     console.log('Middleware: Public path, allowing access');
     return NextResponse.next();
@@ -71,8 +74,16 @@ export async function middleware(request: NextRequest) {
     const loginUrl = new URL('/auth/login', request.url);
     const response = NextResponse.redirect(loginUrl);
     
-    // Clear invalid token
-    response.cookies.delete('token');
+    // Clear invalid token with correct domain
+    if (isProduction) {
+      response.cookies.delete({
+        name: 'token',
+        path: '/',
+        domain: '.editai.app'
+      });
+    } else {
+      response.cookies.delete('token');
+    }
     
     return response;
   }
