@@ -33,14 +33,14 @@ function LoginContent() {
         throw new Error(data.message || 'Failed to login');
       }
 
-      // Check if we got a redirect response
-      if (response.redirected) {
-        window.location.href = response.url;
+      const data = await response.json();
+      
+      if (data.success && data.redirectTo) {
+        router.push(data.redirectTo);
         return;
       }
 
-      // If we get here without a redirect, something went wrong
-      throw new Error('No redirect received after login');
+      throw new Error('Invalid response from server');
     } catch (error) {
       console.error('Login error:', error);
       setError(error instanceof Error ? error.message : 'An error occurred while logging in');

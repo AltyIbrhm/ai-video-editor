@@ -50,11 +50,9 @@ export async function POST(request: Request) {
       email: user.email,
     });
 
-    // Create response with redirect
-    const response = NextResponse.redirect(new URL('/dashboard', request.url));
-    
-    // Set cookie in the response
-    response.cookies.set('token', token, {
+    // Create cookies in the response
+    const cookieStore = cookies();
+    cookieStore.set('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -62,7 +60,14 @@ export async function POST(request: Request) {
       path: '/',
     });
 
-    return response;
+    // Return success response with redirect URL
+    return NextResponse.json(
+      { 
+        success: true,
+        redirectTo: '/dashboard'
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json(
