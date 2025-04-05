@@ -54,14 +54,11 @@ export async function POST(request: Request) {
       email: user.email,
     });
 
-    const baseUrl = getBaseUrl();
-    const dashboardUrl = `${baseUrl}/dashboard`;
-
     // Create response with proper headers
     const response = NextResponse.json(
       { 
         success: true,
-        redirectTo: dashboardUrl,
+        redirectTo: '/dashboard',
         user: {
           id: user.id,
           name: user.name,

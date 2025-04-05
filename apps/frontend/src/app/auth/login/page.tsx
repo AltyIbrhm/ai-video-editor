@@ -39,9 +39,9 @@ function LoginContent() {
       if (data.success && data.redirectTo) {
         console.log('Redirecting to:', data.redirectTo);
         const baseUrl = window.location.origin;
-        const fullUrl = `${baseUrl}${data.redirectTo}`;
+        const fullUrl = baseUrl + data.redirectTo;
         console.log('Full redirect URL:', fullUrl);
-        window.location.replace(fullUrl);
+        window.location.href = fullUrl;
         return;
       }
 
