@@ -53,8 +53,14 @@ export default function DashboardLayout({
         credentials: 'include',
       });
 
-      if (response.redirected) {
-        window.location.href = response.url;
+      const data = await response.json();
+      console.log('Logout response:', data);
+
+      if (data.success) {
+        // Use window.location.href for a full page reload
+        window.location.href = '/auth/login';
+      } else {
+        throw new Error(data.message || 'Logout failed');
       }
     } catch (error) {
       console.error('Logout error:', error);
