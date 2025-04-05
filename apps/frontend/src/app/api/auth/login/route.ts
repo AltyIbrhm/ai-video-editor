@@ -95,14 +95,26 @@ export async function POST(request: Request) {
       }
     );
 
-    // Set cookie
-    console.log('Login API: Setting token cookie');
+    // Set cookie with domain-specific settings
+    const isProduction = process.env.NODE_ENV === 'production';
+    console.log('Login API: Setting cookie in', isProduction ? 'production' : 'development');
+    
     response.cookies.set('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: isProduction,
       sameSite: 'lax',
       path: '/',
+      domain: isProduction ? '.editai.app' : undefined, // Set domain in production
       maxAge: 60 * 60 // 1 hour
+    });
+
+    console.log('Login API: Cookie settings:', {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: 'lax',
+      path: '/',
+      domain: isProduction ? '.editai.app' : undefined,
+      maxAge: 60 * 60
     });
 
     console.log('Login API: Login successful');
