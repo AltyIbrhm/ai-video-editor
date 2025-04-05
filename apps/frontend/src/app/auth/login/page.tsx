@@ -38,7 +38,7 @@ function LoginContent() {
       
       if (data.success && data.redirectTo) {
         console.log('Redirecting to:', data.redirectTo);
-        router.replace(data.redirectTo);
+        window.location.href = data.redirectTo;
         return;
       }
 

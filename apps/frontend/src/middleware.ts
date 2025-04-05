@@ -28,9 +28,7 @@ export async function middleware(request: NextRequest) {
 
     if (!token) {
       console.log('Middleware: No token found, redirecting to login');
-      const response = NextResponse.redirect(new URL('/auth/login', request.url));
-      response.cookies.delete('token');
-      return response;
+      return NextResponse.redirect(new URL('/auth/login', request.url));
     }
 
     try {
@@ -41,7 +39,7 @@ export async function middleware(request: NextRequest) {
       const secretKey = encoder.encode(JWT_SECRET);
       
       const { payload } = await jwtVerify(token, secretKey);
-      console.log('Middleware: Token verified successfully. Payload:', payload);
+      console.log('Middleware: Token verified successfully');
 
       // Allow access to dashboard
       const response = NextResponse.next();
@@ -49,7 +47,7 @@ export async function middleware(request: NextRequest) {
       // Ensure token cookie is set with correct options
       response.cookies.set('token', token, {
         httpOnly: true,
-        secure: false, // Allow non-HTTPS for local testing
+        secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         path: '/',
         maxAge: 60 * 60 // 1 hour
@@ -58,9 +56,7 @@ export async function middleware(request: NextRequest) {
       return response;
     } catch (error) {
       console.error('Middleware: Token verification failed:', error);
-      const response = NextResponse.redirect(new URL('/auth/login', request.url));
-      response.cookies.delete('token');
-      return response;
+      return NextResponse.redirect(new URL('/auth/login', request.url));
     }
   }
 
